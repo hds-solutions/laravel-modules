@@ -2,6 +2,12 @@
 
 namespace HDSSolutions\Laravel\Modules;
 
+use Illuminate\Console\Events\CommandFinished;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Str;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 final class LaravelModulesServiceProvider extends ModuleServiceProvider {
 
     protected function bootCli() {
