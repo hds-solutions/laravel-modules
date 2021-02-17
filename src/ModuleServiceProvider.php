@@ -10,14 +10,19 @@ abstract class ModuleServiceProvider extends \Illuminate\Support\ServiceProvider
     * @return  void
     */
     public final function boot() {
-        // boot for console
-        if ($this->app->runningInConsole()) $this->bootCli();
         // normal boot
         $this->bootEnv();
+        // boot for console
+        if ($this->app->runningInConsole()) $this->bootCli();
     }
 
-    abstract protected function bootEnv():void {}
+    protected function bootEnv():void {}
 
     protected function bootCli():void {}
+
+    protected final function loadSeedersFrom(string|array $paths):void {
+        // register paths on ModulesManager
+        app()->make(ModulesManager::class)->register($paths);
+    }
 
 }
