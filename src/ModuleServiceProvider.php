@@ -2,9 +2,12 @@
 
 namespace HDSSolutions\Laravel\Modules;
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Routing\Router;
 
 abstract class ModuleServiceProvider extends \Illuminate\Support\ServiceProvider {
+
+    protected array $globalMiddlewares = [];
 
     protected string $middlewaresGroup = 'web';
 
@@ -15,11 +18,15 @@ abstract class ModuleServiceProvider extends \Illuminate\Support\ServiceProvider
     *
     * @return  void
     */
-    public final function boot(Router $router) {
+    public final function boot(Router $router, Kernel $kernel) {
         // normal boot
         $this->bootEnv();
         // boot for console
         if ($this->app->runningInConsole()) $this->bootCli();
+        // register global middlewares
+        foreach ($this->globalMiddlewares as $middleware)
+            // register middleware on web group
+            $kernel->pushMiddleware($middleware);
         // register middlewares
         foreach ($this->middlewares as $middleware)
             // register middleware on web group
