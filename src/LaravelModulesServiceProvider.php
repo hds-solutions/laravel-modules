@@ -21,7 +21,7 @@ final class LaravelModulesServiceProvider extends ModuleServiceProvider {
                 // Accept command in console only, exclude all commands from Artisan::call() method.
                 if ($event->output instanceof ConsoleOutput)
                     // execure modules seeds
-                    $this->runModulesSeeds( $event->output );
+                    $this->runModulesSeeds( $event->output, $event->input->getParameterOption('--force') );
             });
     }
 
@@ -58,7 +58,7 @@ final class LaravelModulesServiceProvider extends ModuleServiceProvider {
         return false;
     }
 
-    private function runModulesSeeds(ConsoleOutput $console) {
+    private function runModulesSeeds(ConsoleOutput $console, $force = false) {
         // Run seeders from registered paths
         $console->writeln('<comment>Running seeders from modules</comment>');
         // foreach registered paths
@@ -73,7 +73,7 @@ final class LaravelModulesServiceProvider extends ModuleServiceProvider {
                     $console->writeln("<comment>Seeding:</comment> {$class}");
                     $start = microtime(true);
                     // execute artisan db:seed with specified class
-                    Artisan::call('db:seed', [ '--class' => $class, '--force' => '' ], $console);
+                    Artisan::call('db:seed', [ '--class' => $class, '--force' => $force ], $console);
                     $elapsed = round(microtime(true) - $start, 2);
                     //
                     $console->writeln("<info>Seeded:</info> {$class} ({$elapsed}ms)");
