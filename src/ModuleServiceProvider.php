@@ -3,6 +3,7 @@
 namespace HDSSolutions\Laravel\Modules;
 
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Routing\Router;
 
 abstract class ModuleServiceProvider extends \Illuminate\Support\ServiceProvider {
@@ -12,6 +13,8 @@ abstract class ModuleServiceProvider extends \Illuminate\Support\ServiceProvider
     protected string $middlewaresGroup = 'web';
 
     protected array $middlewares = [];
+
+    private ?AliasLoader $loader = null;
 
     /**
     * Publishes configuration file.
@@ -40,6 +43,16 @@ abstract class ModuleServiceProvider extends \Illuminate\Support\ServiceProvider
     protected final function loadSeedersFrom(string|array $paths):void {
         // register paths on ModulesManager
         app()->make(ModulesManager::class)->register($paths);
+    }
+
+    protected final function alias(string $alias, string $class):void {
+        // register alias
+        $this->getLoader()->alias($alias, $class);
+    }
+
+    private function getLoader():AliasLoader {
+        //
+        return $this->loader ??= AliasLoader::getInstance();
     }
 
 }
