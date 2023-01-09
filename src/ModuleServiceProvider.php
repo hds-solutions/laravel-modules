@@ -1,57 +1,65 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace HDSSolutions\Laravel\Modules;
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
 
-abstract class ModuleServiceProvider extends \Illuminate\Support\ServiceProvider {
+abstract class ModuleServiceProvider extends ServiceProvider {
 
-    protected array $globalMiddlewares = [];
+    protected array      $globalMiddlewares = [];
 
-    protected string $middlewaresGroup = 'web';
+    protected string     $middlewaresGroup  = 'web';
 
-    protected array $middlewares = [];
+    protected array      $middlewares       = [];
 
-    private ?AliasLoader $loader = null;
+    private ?AliasLoader $loader            = null;
 
     /**
-    * Publishes configuration file.
-    *
-    * @return  void
-    */
-    public final function boot(Router $router, Kernel $kernel) {
-        // normal boot
+     * Publishes configuration file.
+     *
+     * @return  void
+     */
+    final public function boot(Router $router, Kernel $kernel): void {
+        // boot common environment
         $this->bootEnv();
-        // boot for console
-        if ($this->app->runningInConsole()) $this->bootCli();
+
+        // check if app is running in console
+        if ($this->app->runningInConsole()) {
+            // boot console environment
+            $this->bootCli();
+        }
+
         // register global middlewares
-        foreach ($this->globalMiddlewares as $middleware)
+        foreach ($this->globalMiddlewares as $middleware) {
             // register middleware on web group
             $kernel->pushMiddleware($middleware);
+        }
         // register middlewares
-        foreach ($this->middlewares as $middleware)
+        foreach ($this->middlewares as $middleware) {
             // register middleware on web group
             $router->pushMiddlewareToGroup($this->middlewaresGroup, $middleware);
+        }
     }
 
-    protected function bootEnv():void {}
+    protected function bootEnv(): void {}
 
-    protected function bootCli():void {}
+    protected function bootCli(): void {}
 
-    protected final function loadSeedersFrom(string|array $paths):void {
+    final protected function loadSeedersFrom(string | array $paths): void {
         // register paths on ModulesManager
         app()->make(ModulesManager::class)->register($paths);
     }
 
-    protected final function alias(string $alias, string $class):void {
+    final protected function alias(string $alias, string $class): void {
         // register alias
         $this->getLoader()->alias($alias, $class);
     }
 
-    private function getLoader():AliasLoader {
-        //
+    private function getLoader(): AliasLoader {
+        // init / return alias loader
         return $this->loader ??= AliasLoader::getInstance();
     }
 

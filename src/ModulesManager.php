@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace HDSSolutions\Laravel\Modules;
 
@@ -7,19 +7,18 @@ use Illuminate\Support\Collection;
 final class ModulesManager {
 
     public function __construct(
-        private Collection|null $seeders_paths = null
-    ) {
-        $this->seeders_paths = collect();
-    }
+        private readonly ?Collection $seeders_paths = new Collection(),
+    ) {}
 
-    public function register(string|array $paths) {
+    public function register(string | array $paths): void {
         // foreach paths
-        collect(is_array($paths) ? array_values($paths) : [ $paths ])
+        foreach ((array) $paths as $path) {
             // push path to collection
-            ->each(fn($path) => $this->seeders_paths->push( $path ));
+            $this->seeders_paths->push($path);
+        }
     }
 
-    public function getPaths():array {
+    public function getPaths(): array {
         return $this->seeders_paths->toArray();
     }
 
