@@ -9,9 +9,10 @@
             "email": "hschimpf@hds-solutions.net"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
-        "php": "^7.4|^8.0"
+        "php": "^8.0|^8.1",
+        "laravel/framework": "^9.46"
     },
     "autoload": {
         "psr-4": {
